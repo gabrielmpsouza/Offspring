@@ -20,7 +20,7 @@ print_file_content() {
 }
 
 print_welcome_message() {
-    zsh welcome.sh
+    zsh /source/welcome.sh
 }
 
 print_menu() {
