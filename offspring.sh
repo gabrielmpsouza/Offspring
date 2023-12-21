@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly OFSPRING_FILE="/root/.f/offspring.txt"
+readonly OFSPRING_FILE="/source/offspring.txt"
 readonly LICENSE_FILE="/root/.f/licenca.txt"
 readonly USB_RANSOM_SRC_DIR="/source/USB-Ransom"
 readonly RAT_SRC_DIR="/source/RATmail"
