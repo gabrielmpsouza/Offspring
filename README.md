@@ -1,12 +1,10 @@
 # The Offspring
 
-O The Offspring é uma ferramenta de malwares que cria trojans e executáveis binários do MS-DOS. Esses arquivos são colocados em dispositivos de armazenamento USB pen-drive e são compilados quando inseridos.
+O The Offspring é uma ferramenta de malwares que cria trojans e executáveis binários do Windows. Esses arquivos são colocados em dispositivos de armazenamento USB pen-drive e são compilados quando inseridos.
 
 ## Funcionalidades
 
-- Ferramentas de Flash-USB: Automatiza a configuração de malwares e pré-compilação de arquivos necessários.
-- Sobre o OFFSPRING: Fornece informações sobre a ferramenta.
-- Licença: Exibe a licença associada à ferramenta.
+- Ferramentas de Flash-USB: Automatiza a configuração de malwares e pré-compilação de arquivos necessários. Após isso, move os arquivos configurados para um pendrive específico, que dependendo das configurações que o usuario escolhe, pode ser auto executado.
 
 ## Desenvolvedor
 
@@ -21,30 +19,39 @@ O The Offspring é uma ferramenta de malwares que cria trojans e executáveis bi
 ## Pré-requisitos
 
 - Ambiente Linux
-
+- Python
+- Bash
+- Pendrive
+  
 ## Instalação
 
 1. Clone o repositório:
 
     ```bash
+    sudo -i
     git clone https://github.com/gabrielmpsouza/Offspring.git
-    cd TheOffspring
+    cd Offspring
     ```
 
 2. Execute o script:
 
     ```bash
-    ./build.sh
+    sudo ./build.sh
     ```
+3. Use o comando offspring.sh;
+   ```bash
+   offspring.sh
+   ```
 
 ## Menu Principal
 
-Ao executar o script, você será apresentado ao menu principal com as seguintes opções:
+Ao executar o script, você será apresentado ao menu principal com a opção de cinco scripts, sendo:
+1. 1 Ransomware
+2. 2 RATs
+3. 1 Reverse Shell
+4. 1Credential Stealer
 
-1. Ferramentas de Flash-USB
-2. Sobre o OFFSPRING
-3. Licença
-99. Sair
+No futuro adicionarei mais scripts.
 
 ## Contribuição
 
