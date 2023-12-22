@@ -38,9 +38,10 @@ O The Offspring é uma ferramenta de malwares que cria trojans e executáveis bi
     ```bash
     sudo ./build.sh
     ```
-3. Use o comando offspring.sh;
+3. Use o comando offspring ou offspring-english para a versão em inglês;
    ```bash
-   offspring.sh
+   offspring
+   offspring-english
    ```
 
 ## Menu Principal
